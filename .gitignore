@@ -1,0 +1,5 @@
+server/.venv
+server/database/users.db
+
+client/*.exe
+client/*.test
