@@ -4,6 +4,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/hex"
 )
 
 func GenerateKeyPair() (ed25519.PublicKey, ed25519.PrivateKey, error) {
@@ -16,5 +17,5 @@ func GenerateKeyPair() (ed25519.PublicKey, ed25519.PrivateKey, error) {
 
 func HashedKey(key ed25519.PublicKey) string {
 	hashBytes := sha256.Sum256([]byte(key))
-	return string(hashBytes[:])
+	return hex.EncodeToString(hashBytes[:])
 }

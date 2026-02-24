@@ -1,5 +1,9 @@
-server/.venv
-server/database/users.db
+# in case the username/keys get generated in the current directory
+.conduit/ 
 
-client/*.exe
-client/*.test
+# binaries
+conduit
+conduit.exe
+
+# macos
+.DS_Store
