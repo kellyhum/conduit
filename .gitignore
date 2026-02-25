@@ -5,5 +5,10 @@
 conduit
 conduit.exe
 
+# python
+**/.venv
+**/__pycache__/
+backend/conduit.db
+
 # macos
 .DS_Store

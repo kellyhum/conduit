@@ -13,6 +13,8 @@ type UserConfig struct {
 	PrivateKey string `json:"private_key"`
 }
 
+const BaseURL = "http://127.0.0.1:8000"
+
 func GetPath() string {
 	home, _ := os.UserHomeDir()
 	return filepath.Join(home, ".conduit", "config.json") // points to ~/.conduit/config.json

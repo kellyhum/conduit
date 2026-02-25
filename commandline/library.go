@@ -41,7 +41,7 @@ func Library() *cli.Command {
 					fmt.Printf("- %s\n", file)
 				}
 			} else {
-				fmt.Println("Your library is empty. Use `./conduit upload --file <filename>` to add files to your library!")
+				fmt.Println("Your library is empty. Use `./conduit upload <filename>` to add files to your library!")
 			}
 
 			return nil

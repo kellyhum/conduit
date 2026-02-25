@@ -2,16 +2,20 @@
 
 A file-transfer CLI tool that lets users upload and download files with E2E encryption
 
+### Tech Stack
+- Golang (urfave/cli, cryptography)
+    - CLI commands
+    - Strong cryptography package
+- SQL
+    - Source of truth database for usernames, public keys, ips
+- Python/FastAPI
+    - Mostly to learn how to use FastAPI, otherwise Go's https package has the same functionality
+
 ### Cryptography
 - File is encrypted with AES-GCM
 - Public/private keys are generated with Ed25519, used for confidentiality + integrity
 - Transport will be using HTTPS/TLS
-- SHA256 is used for displaying the user id
-
-### Tech Stack
-- Golang (Bubble Tea TUI)
-- Python/Flask
-- SQL
+- SHA256 is used for displaying the user id as a hash
 
 ### Architectural Pivots
 - Started with Claude/ChatGPT-ing an architecture - my only constraints were that I knew I wanted AES and ed25519 encryption (googled the best digital signature algorithms -> ECDSA -> ed25519)

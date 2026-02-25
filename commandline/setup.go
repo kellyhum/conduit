@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"net/http"
+	"net/url"
 
 	"github.com/urfave/cli/v3"
 
@@ -21,7 +23,25 @@ func Setup() *cli.Command {
 				return fmt.Errorf("ERROR: no username provided. Please run `conduit setup <username>` to set up your client")
 			}
 
-			// SETUP
+			// CHECK EXISTING
+			if config.PrevUser() {
+				fmt.Println("Existing configuration found. Attempting to sync with server...")
+				user, err := config.GetUser()
+				if err != nil {
+					return err
+				}
+
+				err = registerUser(user.Username, user.Id, user.PublicKey)
+				if err != nil {
+					fmt.Printf("ERROR: Failed to sync with server: %v\n", err)
+				} else {
+					fmt.Println("Successfully synced with server!")
+				}
+
+				return nil
+			}
+
+			// LOCAL SETUP
 			username := cmd.Args().First()
 			fmt.Printf("Setting up your conduit client with username: %s...\n", username)
 
@@ -49,9 +69,37 @@ func Setup() *cli.Command {
 				return fmt.Errorf("failed to create user: %w", err)
 			}
 
-			fmt.Println("Client setup complete! Run `./conduit --help` to view all available commands")
+			fmt.Println("Client setup complete!")
 
+			// SERVER SETUP
+			err = registerUser(username, id, pubString)
+			if err != nil {
+				fmt.Printf("ERROR: Failed to register user with server: %v\n", err)
+			} else {
+				fmt.Println("Successfully registered user with server!")
+			}
+
+			fmt.Println("Setup fully completed - run `./conduit` to view all available commands")
 			return nil
 		},
 	}
+}
+
+func registerUser(username string, id string, publicKey string) error {
+	formData := url.Values{}
+	formData.Set("username", username)
+	formData.Set("user_id", id)
+	formData.Set("public_key", publicKey)
+
+	resp, err := http.PostForm(config.BaseURL+"/saveuser", formData)
+	if err != nil {
+		return fmt.Errorf("Failed to save user to server: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("Server returned error status %d", resp.StatusCode)
+	}
+
+	return nil
 }

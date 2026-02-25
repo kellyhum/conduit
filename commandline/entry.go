@@ -12,6 +12,8 @@ func Entry() *cli.Command {
 			Setup(),
 			Library(),
 			Transfer(),
+			Listen(),
+			Upload(),
 		},
 	}
 }
