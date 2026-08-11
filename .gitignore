@@ -1,5 +1,5 @@
 # in case the username/keys get generated in the current directory
-.conduit/ 
+.conduit/
 
 # binaries
 conduit
@@ -12,3 +12,6 @@ backend/conduit.db
 
 # macos
 .DS_Store
+
+# md files
+tasks.md

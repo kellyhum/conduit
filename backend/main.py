@@ -1,4 +1,5 @@
 import sqlite3
+
 from fastapi import FastAPI, Form, Request
 
 app = FastAPI()
@@ -9,12 +10,12 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users (
-                    username TEXT PRIMARY KEY, 
+                    username TEXT PRIMARY KEY,
                     user_id TEXT,
-                    public_key TEXT, 
+                    public_key TEXT,
                     ip_address TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS files (
-                    filename TEXT, 
+                    filename TEXT,
                     owner_username TEXT)''')
     conn.commit()
     conn.close()
@@ -26,8 +27,8 @@ init_db()
 # conduit 'setup' command
 @app.post("/saveuser")
 async def register(request: Request,
-                   username: str = Form(...), 
-                   user_id: str = Form(...), 
+                   username: str = Form(...),
+                   user_id: str = Form(...),
                    public_key: str = Form(...)):
     ip_addr = request.client.host
 
@@ -49,16 +50,16 @@ async def get_user_info(username: str):
     conn.close()
 
     if user:
-        return {"username": username, 
-                "public_key": user[0], 
+        return {"username": username,
+                "public_key": user[0],
                 "ip_address": user[1]}
-    
+
     return {"error": "user not found"}
 
 # /uplaod = record file exists in sql database
 # conduit 'upload' command
 @app.post("/upload")
-async def upload(filename: str = Form(...), 
+async def upload(filename: str = Form(...),
                  owner_username: str = Form(...)):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
