@@ -46,7 +46,7 @@ func Setup() *cli.Command {
 			fmt.Printf("Setting up your conduit client with username: %s...\n", username)
 
 			// dir initializtion
-			if err := config.InitializeDir(); err != nil {
+			if err := config.InitializeLibraryDir(); err != nil {
 				return fmt.Errorf("failed to initialize directory: %w", err)
 			}
 

@@ -15,21 +15,35 @@ type UserConfig struct {
 
 const BaseURL = "http://127.0.0.1:8000"
 
-func GetPath() string {
+// HELPERS
+func HomeDir() string {
+	// use the CONDUIT_DIR path if that's set (for testing)
+	envHome := os.Getenv("CONDUIT_DIR")
+	if envHome != "" {
+		return envHome
+	}
+
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".conduit", "config.json") // points to ~/.conduit/config.json
+	return filepath.Join(home, ".conduit")
 }
 
-func InitializeDir() error {
-	home, _ := os.UserHomeDir()
-	path := filepath.Join(home, ".conduit")   // ~/.conduit
-	library := filepath.Join(path, "library") // ~/.conduit/library
-
-	return os.MkdirAll(library, 0700) // 700 = read/write/execute
+func LibraryDir() string {
+	// points to ~/.conduit/library/
+	return filepath.Join(HomeDir(), "library")
 }
 
+func ConfigJSON() string {
+	// points to ~/.conduit/config.json
+	return filepath.Join(HomeDir(), "config.json")
+}
+
+func InitializeLibraryDir() error {
+	return os.MkdirAll(LibraryDir(), 0700) // 700 = read/write/execute
+}
+
+// USERS
 func PrevUser() bool {
-	_, err := os.Stat(GetPath()) // t = fileinfo, f = error
+	_, err := os.Stat(ConfigJSON()) // t = fileinfo, f = error
 	return err == nil
 }
 
@@ -46,13 +60,13 @@ func CreateUser(username string, id string, publicKey string, privateKey string)
 		return err
 	}
 
-	return os.WriteFile(GetPath(), data, 0600) // 600 = read/write
+	return os.WriteFile(ConfigJSON(), data, 0600) // 600 = read/write
 }
 
 func GetUser() (UserConfig, error) {
 	var config UserConfig
 
-	data, err := os.ReadFile(GetPath())
+	data, err := os.ReadFile(ConfigJSON())
 	if err != nil {
 		return config, err
 	}

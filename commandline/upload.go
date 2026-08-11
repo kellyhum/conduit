@@ -42,14 +42,10 @@ func Upload() *cli.Command {
 			}
 			defer sourceFile.Close()
 
-			home, _ := os.UserHomeDir()
-			destinationPath := filepath.Join(home, ".conduit", "library", filepath.Base(filePath))
-
-			libraryDir := filepath.Join(home, ".conduit", "library")
-			err = os.MkdirAll(libraryDir, 0755)
-			if err != nil {
+			if err := config.InitializeLibraryDir(); err != nil {
 				return fmt.Errorf("failed to create library directory: %w", err)
 			}
+			destinationPath := filepath.Join(config.LibraryDir(), filepath.Base(filePath))
 
 			destinationFile, err := os.Create(destinationPath)
 			if err != nil {

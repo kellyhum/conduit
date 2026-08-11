@@ -37,14 +37,13 @@ func Transfer() *cli.Command {
 			pubKeyBytes, _ := hex.DecodeString(userProfile.PublicKey)
 			privKeyBytes, _ := hex.DecodeString(userProfile.PrivateKey)
 
-			home, _ := os.UserHomeDir()
-			localPath := filepath.Join(home, ".conduit", "library", fileToTransfer)
+			localPath := filepath.Join(config.LibraryDir(), fileToTransfer)
 			fileData, err := os.ReadFile(localPath)
 			if err != nil {
 				return fmt.Errorf("Could not read file from library: %w", err)
 			}
 
-			signature := cryptography.SignData(fileData, privKeyBytes) // sign file data w/ priv key for authentication!
+			signature := cryptography.SignData(fileData, privKeyBytes) // sign file data w/ priv key for authenticity/integrity
 			header := make([]byte, 1024)
 			copy(header[0:512], []byte(fileToTransfer))
 			copy(header[512:576], signature)

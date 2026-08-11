@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/urfave/cli/v3"
 
@@ -27,7 +26,7 @@ func Library() *cli.Command {
 			fmt.Printf("ID: %s\n", userProfile.Id)
 			fmt.Printf("Public Key: %s\n", userProfile.PublicKey)
 			fmt.Println("--------------------")
-
+			fmt.Println()
 			fmt.Println("LIBRARY ------------")
 			files, err := GetFiles()
 			if err != nil {
@@ -50,10 +49,7 @@ func Library() *cli.Command {
 }
 
 func GetFiles() ([]string, error) {
-	home, _ := os.UserHomeDir()
-	libraryPath := filepath.Join(home, ".conduit", "library")
-
-	dirEntries, err := os.ReadDir(libraryPath)
+	dirEntries, err := os.ReadDir(config.LibraryDir())
 	if err != nil {
 		return nil, err
 	}

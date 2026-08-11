@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/kellyhum/conduit/config"
 	"github.com/kellyhum/conduit/cryptography"
 	"github.com/urfave/cli/v3"
 )
@@ -61,20 +62,14 @@ func handleIncoming(conn net.Conn) {
 		return
 	}
 
-	home, err := os.UserHomeDir()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to get home directory: %v\n", err)
+	if err := config.InitializeLibraryDir(); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to create the library directory: %v\n", err)
 		return
 	}
 
-	destPath := filepath.Join(home, ".conduit", "library", fileName)
-	err = os.MkdirAll(filepath.Dir(destPath), 0755)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create directory: %v\n", err)
-		return
-	}
+	destPath := filepath.Join(config.LibraryDir(), fileName)
 
-	err = os.WriteFile(destPath, fileData, 0644)
+	err = os.WriteFile(destPath, fileData, 0600)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to write file: %v\n", err)
 		return
