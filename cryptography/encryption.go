@@ -3,9 +3,14 @@ package cryptography
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/ecdh"
 	"crypto/rand"
 	"io"
 )
+
+func GenerateEncryptionKey() (*ecdh.PrivateKey, error) {
+	return ecdh.X25519().GenerateKey(rand.Reader)
+}
 
 func EncryptData(data []byte, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
