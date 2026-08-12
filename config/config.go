@@ -11,6 +11,8 @@ type UserConfig struct {
 	Id         string `json:"id"`
 	PublicKey  string `json:"public_key"`
 	PrivateKey string `json:"private_key"`
+	EncryptionPublicKey string `json:"encryption_public_key"`
+	EncryptionPrivateKey string `json:"encryption_private_key"`
 }
 
 const BaseURL = "http://127.0.0.1:8000"
@@ -47,12 +49,14 @@ func PrevUser() bool {
 	return err == nil
 }
 
-func CreateUser(username string, id string, publicKey string, privateKey string) error {
+func CreateUser(username string, id string, publicKey string, privateKey string, encPublicKey string, encPrivateKey string) error {
 	config := UserConfig{
 		Username:   username,
 		Id:         id,
 		PublicKey:  publicKey,
 		PrivateKey: privateKey,
+		EncryptionPublicKey: encPublicKey,
+		EncryptionPrivateKey: encPrivateKey,
 	}
 
 	data, err := json.MarshalIndent(config, "", "  ")

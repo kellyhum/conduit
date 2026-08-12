@@ -31,7 +31,7 @@ func Setup() *cli.Command {
 					return err
 				}
 
-				err = registerUser(user.Username, user.Id, user.PublicKey)
+				err = registerUser(user.Username, user.Id, user.PublicKey, user.EncryptionPublicKey)
 				if err != nil {
 					fmt.Printf("ERROR: Failed to sync with server: %v\n", err)
 				} else {
@@ -51,7 +51,14 @@ func Setup() *cli.Command {
 			}
 
 			// keygen
+			// signing
 			pub, priv, err := cryptography.GenerateKeyPair()
+			if err != nil {
+				return fmt.Errorf("cryptography error: %w", err)
+			}
+
+			// data encryption
+			encKey, err := cryptography.GenerateEncryptionKey()
 			if err != nil {
 				return fmt.Errorf("cryptography error: %w", err)
 			}
@@ -59,12 +66,14 @@ func Setup() *cli.Command {
 			// keys -> hex b/c saving in json format
 			pubString := hex.EncodeToString(pub)
 			privString := hex.EncodeToString(priv)
+			dataEncPubKey := hex.EncodeToString(encKey.PublicKey().Bytes())
+			dataEncPrivKey := hex.EncodeToString(encKey.Bytes())
 
 			// generate random id for user
 			id := cryptography.HashedKey(pub)
 
 			// actually make the json
-			err = config.CreateUser(username, id, pubString, privString)
+			err = config.CreateUser(username, id, pubString, privString, dataEncPubKey, dataEncPrivKey)
 			if err != nil {
 				return fmt.Errorf("failed to create user: %w", err)
 			}
@@ -72,7 +81,7 @@ func Setup() *cli.Command {
 			fmt.Println("Client setup complete!")
 
 			// SERVER SETUP
-			err = registerUser(username, id, pubString)
+			err = registerUser(username, id, pubString, dataEncPubKey)
 			if err != nil {
 				fmt.Printf("ERROR: Failed to register user with server: %v\n", err)
 			} else {
@@ -85,11 +94,12 @@ func Setup() *cli.Command {
 	}
 }
 
-func registerUser(username string, id string, publicKey string) error {
+func registerUser(username string, id string, publicKey string, encryptionPublicKey string) error {
 	formData := url.Values{}
 	formData.Set("username", username)
 	formData.Set("user_id", id)
 	formData.Set("public_key", publicKey)
+	formData.Set("encryption_public_key", encryptionPublicKey)
 
 	resp, err := http.PostForm(config.BaseURL+"/saveuser", formData)
 	if err != nil {

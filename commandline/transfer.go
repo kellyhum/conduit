@@ -18,6 +18,7 @@ import (
 
 type UserInfo struct {
 	PublicKey string `json:"public_key"`
+	EncryptionPublicKey string `json:"encryption_public_key"`
 	IPAddress string `json:"ip_address"`
 	Error     string `json:"error"`
 }

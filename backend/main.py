@@ -13,6 +13,7 @@ def init_db():
                     username TEXT PRIMARY KEY,
                     user_id TEXT,
                     public_key TEXT,
+                    encryption_public_key TEXT,
                     ip_address TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS files (
                     filename TEXT,
@@ -29,12 +30,13 @@ init_db()
 async def register(request: Request,
                    username: str = Form(...),
                    user_id: str = Form(...),
-                   public_key: str = Form(...)):
+                   public_key: str = Form(...),
+                   encryption_public_key: str = Form(...)):
     ip_addr = request.client.host
 
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("INSERT OR REPLACE INTO users VALUES (?, ?, ?, ?)", (username, user_id, public_key, ip_addr))
+    c.execute("INSERT OR REPLACE INTO users VALUES (?, ?, ?, ?, ?)", (username, user_id, public_key, encryption_public_key, ip_addr))
     conn.commit()
     conn.close()
     return {"status": f"user {username} synced to database"}
@@ -45,14 +47,15 @@ async def register(request: Request,
 async def get_user_info(username: str):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("SELECT public_key, ip_address FROM users WHERE username=?", (username,))
+    c.execute("SELECT public_key, encryption_public_key, ip_address FROM users WHERE username=?", (username,))
     user = c.fetchone()
     conn.close()
 
     if user:
         return {"username": username,
                 "public_key": user[0],
-                "ip_address": user[1]}
+                "encryption_public_key": user[1],
+                "ip_address": user[2]}
 
     return {"error": "user not found"}
 
