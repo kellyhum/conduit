@@ -2,7 +2,9 @@ package commandline
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 
 	"github.com/urfave/cli/v3"
@@ -17,7 +19,7 @@ func Library() *cli.Command {
 		Action: func(context.Context, *cli.Command) error {
 			userProfile, err := config.GetUser()
 			if err != nil {
-				fmt.Println("ERROR (LIBRARY): no configuration file found. Please run `./conduit setup <username>` to begin")
+				fmt.Println("No configuration file found. Please run `./conduit setup <username>` to begin")
 				return nil
 			}
 
@@ -50,6 +52,10 @@ func Library() *cli.Command {
 
 func GetFiles() ([]string, error) {
 	dirEntries, err := os.ReadDir(config.LibraryDir())
+	if errors.Is(err, fs.ErrNotExist) {
+		// empty library -> return a valid value so that it hits the else case in Library()
+		return []string{}, nil
+	}
 	if err != nil {
 		return nil, err
 	}

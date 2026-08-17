@@ -16,8 +16,9 @@ import (
 
 func Upload() *cli.Command {
 	return &cli.Command{
-		Name:  "upload",
-		Usage: "Upload a file to both library and server",
+		Name:      "upload",
+		Usage:     "Upload a file to both library and server",
+		ArgsUsage: "<filename>",
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			if cmd.Args().Len() == 0 {
 				return fmt.Errorf("file path is required")

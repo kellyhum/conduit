@@ -69,7 +69,7 @@ func Setup() *cli.Command {
 			dataEncPubKey := hex.EncodeToString(encKey.PublicKey().Bytes())
 			dataEncPrivKey := hex.EncodeToString(encKey.Bytes())
 
-			// generate random id for user
+			// generate sha256 (deterministic) key for user id, derived from pubkey
 			id := cryptography.HashedKey(pub)
 
 			// actually make the json

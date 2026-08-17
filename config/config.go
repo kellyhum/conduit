@@ -7,11 +7,11 @@ import (
 )
 
 type UserConfig struct {
-	Username   string `json:"username"`
-	Id         string `json:"id"`
-	PublicKey  string `json:"public_key"`
-	PrivateKey string `json:"private_key"`
-	EncryptionPublicKey string `json:"encryption_public_key"`
+	Username             string `json:"username"`
+	Id                   string `json:"id"`
+	PublicKey            string `json:"public_key"`
+	PrivateKey           string `json:"private_key"`
+	EncryptionPublicKey  string `json:"encryption_public_key"`
 	EncryptionPrivateKey string `json:"encryption_private_key"`
 }
 
@@ -51,11 +51,11 @@ func PrevUser() bool {
 
 func CreateUser(username string, id string, publicKey string, privateKey string, encPublicKey string, encPrivateKey string) error {
 	config := UserConfig{
-		Username:   username,
-		Id:         id,
-		PublicKey:  publicKey,
-		PrivateKey: privateKey,
-		EncryptionPublicKey: encPublicKey,
+		Username:             username,
+		Id:                   id,
+		PublicKey:            publicKey,
+		PrivateKey:           privateKey,
+		EncryptionPublicKey:  encPublicKey,
 		EncryptionPrivateKey: encPrivateKey,
 	}
 

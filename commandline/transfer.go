@@ -17,16 +17,17 @@ import (
 )
 
 type UserInfo struct {
-	PublicKey string `json:"public_key"`
+	PublicKey           string `json:"public_key"`
 	EncryptionPublicKey string `json:"encryption_public_key"`
-	IPAddress string `json:"ip_address"`
-	Error     string `json:"error"`
+	IPAddress           string `json:"ip_address"`
+	Error               string `json:"error"`
 }
 
 func Transfer() *cli.Command {
 	return &cli.Command{
-		Name:  "transfer",
-		Usage: "Transfer files between users",
+		Name:      "transfer",
+		Usage:     "Transfer files between users",
+		ArgsUsage: "<filename> <username>",
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			if cmd.Args().Len() < 2 {
 				return fmt.Errorf("usage: conduit transfer <filename> <target_username>")
@@ -34,9 +35,20 @@ func Transfer() *cli.Command {
 			// get current user info
 			fileToTransfer := cmd.Args().Get(0)
 
-			userProfile, _ := config.GetUser()
-			pubKeyBytes, _ := hex.DecodeString(userProfile.PublicKey)
-			privKeyBytes, _ := hex.DecodeString(userProfile.PrivateKey)
+			userProfile, err := config.GetUser()
+			if err != nil {
+				return fmt.Errorf("No user found - run `conduit setup <username>` first")
+			}
+
+			pubKeyBytes, err := hex.DecodeString(userProfile.PublicKey)
+			if err != nil {
+				return fmt.Errorf("Error decoding public key: %w", err)
+			}
+
+			privKeyBytes, err := hex.DecodeString(userProfile.PrivateKey)
+			if err != nil {
+				return fmt.Errorf("Error decoding private key: %w", err)
+			}
 
 			localPath := filepath.Join(config.LibraryDir(), fileToTransfer)
 			fileData, err := os.ReadFile(localPath)
@@ -82,12 +94,9 @@ func Transfer() *cli.Command {
 			}
 
 			fmt.Printf("Sending %s (%d bytes)...\n", fileToTransfer, len(fileData))
-			n, err := conn.Write(fileData)
+			_, err = conn.Write(fileData)
 			if err != nil {
 				return fmt.Errorf("failed to send file data: %w", err)
-			}
-			if n < len(fileData) {
-				return fmt.Errorf("file data was only partially sent (%d/%d bytes)", n, len(fileData))
 			}
 
 			fmt.Println("File transfer successfully completed!")
