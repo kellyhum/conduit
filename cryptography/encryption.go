@@ -5,6 +5,9 @@ import (
 	"crypto/cipher"
 	"crypto/ecdh"
 	"crypto/rand"
+	"crypto/sha1"
+	"crypto/sha256"
+	"fmt"
 	"io"
 )
 
